@@ -1,13 +1,21 @@
 package com.example.joia2026
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+
 class CadastroActivity : AppCompatActivity() {
 
+    private lateinit var layoutNome: TextInputLayout
+    private lateinit var layoutCpf: TextInputLayout
+    private lateinit var layoutEmail: TextInputLayout
+    private lateinit var layoutSenha: TextInputLayout
     private lateinit var edtNome: TextInputEditText
     private lateinit var edtCpf: TextInputEditText
     private lateinit var edtEmail: TextInputEditText
@@ -18,6 +26,12 @@ class CadastroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastro)
+
+        // Mostrar erros nos campos
+        layoutNome = findViewById(R.id.layoutNome)
+        layoutCpf = findViewById(R.id.layoutCpf)
+        layoutEmail = findViewById(R.id.layoutEmail)
+        layoutSenha = findViewById(R.id.layoutSenha)
 
         edtNome = findViewById(R.id.edtNome)
         edtCpf = findViewById(R.id.edtCpf)
@@ -59,6 +73,12 @@ class CadastroActivity : AppCompatActivity() {
         txtEntrar.setOnClickListener {
             Toast.makeText(this, "Aqui você pode voltar para Login!", Toast.LENGTH_SHORT).show()
             finish() // fecha essa tela e volta pra anterior
+        }
+
+        btnCadastrar.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }
