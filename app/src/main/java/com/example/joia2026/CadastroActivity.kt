@@ -1,0 +1,64 @@
+package com.example.joia2026
+
+import android.os.Bundle
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+class CadastroActivity : AppCompatActivity() {
+
+    private lateinit var edtNome: TextInputEditText
+    private lateinit var edtCpf: TextInputEditText
+    private lateinit var edtEmail: TextInputEditText
+    private lateinit var edtSenha: TextInputEditText
+    private lateinit var btnCadastrar: MaterialButton
+    private lateinit var txtEntrar: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_cadastro)
+
+        edtNome = findViewById(R.id.edtNome)
+        edtCpf = findViewById(R.id.edtCpf)
+        edtEmail = findViewById(R.id.edtEmail)
+        edtSenha = findViewById(R.id.edtSenha)
+        btnCadastrar = findViewById(R.id.btnCadastrar)
+        txtEntrar = findViewById(R.id.txtEntrar)
+
+        btnCadastrar.setOnClickListener {
+
+            val nome = edtNome.text.toString().trim()
+            val cpf = edtCpf.text.toString().trim()
+            val email = edtEmail.text.toString().trim()
+            val senha = edtSenha.text.toString().trim()
+
+            if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty() || senha.isEmpty()) {
+                Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (cpf.length != 11) {
+                Toast.makeText(this, "CPF inválido! Deve conter 11 números.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!email.contains("@")) {
+                Toast.makeText(this, "Digite um e-mail válido!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (senha.length < 6) {
+                Toast.makeText(this, "A senha deve ter no mínimo 6 caracteres.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+        }
+
+        txtEntrar.setOnClickListener {
+            Toast.makeText(this, "Aqui você pode voltar para Login!", Toast.LENGTH_SHORT).show()
+            finish() // fecha essa tela e volta pra anterior
+        }
+    }
+}
