@@ -1,174 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="#F5F5F5">
 
-    <ImageView
-        android:id="@+id/imgLogo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/logo_app"
-        android:contentDescription="Logo do App"
-        android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"/>
-
-    <TextView
-        android:id="@+id/txtTituloCadastro"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Criar Conta"
-        android:textAlignment="center"
-        android:textColor="#1A1A1A"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imgLogo" />
+        android:paddingBottom="40dp">
 
-    <TextView
-        android:id="@+id/txtSubtituloCadastro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Preencha os dados abaixo para continuar"
-        android:textAlignment="center"
-        android:textColor="#666666"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtTituloCadastro" />
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/logo_app"
+            android:contentDescription="Logo do App"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="40dp"/>
 
-    <!-- Campo Nome -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutNome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Nome completo"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="14dp"
-        app:boxCornerRadiusTopEnd="14dp"
-        app:boxCornerRadiusBottomStart="14dp"
-        app:boxCornerRadiusBottomEnd="14dp"
-        app:layout_constraintTop_toBottomOf="@id/txtSubtituloCadastro"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtNome"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/txtTituloCadastro"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="20dp"
+            android:text="Criar Conta"
+            android:textAlignment="center"
+            android:textColor="#1A1A1A"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imgLogo" />
 
-    <!-- Campo CPF -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutCpf"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="CPF"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="14dp"
-        app:boxCornerRadiusTopEnd="14dp"
-        app:boxCornerRadiusBottomStart="14dp"
-        app:boxCornerRadiusBottomEnd="14dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutNome"
-        app:layout_constraintStart_toStartOf="@id/layoutNome"
-        app:layout_constraintEnd_toEndOf="@id/layoutNome"
-        android:layout_marginTop="16dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtCpf"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/txtSubtituloCadastro"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="11"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="6dp"
+            android:text="Preencha os dados abaixo para continuar"
+            android:textAlignment="center"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtTituloCadastro" />
 
-    <!-- Campo Email -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="E-mail"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="14dp"
-        app:boxCornerRadiusTopEnd="14dp"
-        app:boxCornerRadiusBottomStart="14dp"
-        app:boxCornerRadiusBottomEnd="14dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutCpf"
-        app:layout_constraintStart_toStartOf="@id/layoutNome"
-        app:layout_constraintEnd_toEndOf="@id/layoutNome"
-        android:layout_marginTop="16dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtEmail"
-            android:layout_width="match_parent"
+        <!-- Campo Nome -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutNome"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Nome completo"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/txtSubtituloCadastro"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp">
 
-    <!-- Campo Senha -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutSenha"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Senha"
-        app:passwordToggleEnabled="true"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="14dp"
-        app:boxCornerRadiusTopEnd="14dp"
-        app:boxCornerRadiusBottomStart="14dp"
-        app:boxCornerRadiusBottomEnd="14dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutEmail"
-        app:layout_constraintStart_toStartOf="@id/layoutNome"
-        app:layout_constraintEnd_toEndOf="@id/layoutNome"
-        android:layout_marginTop="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtSenha"
-            android:layout_width="match_parent"
+        <!-- Campo CPF -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutCpf"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="CPF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutNome"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="12dp">
 
-    <!-- Botão Cadastrar -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCadastrar"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:text="Cadastrar"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#1E88E5"
-        android:textColor="#FFFFFF"
-        app:cornerRadius="14dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutSenha"
-        app:layout_constraintStart_toStartOf="@id/layoutNome"
-        app:layout_constraintEnd_toEndOf="@id/layoutNome"
-        android:layout_marginTop="28dp"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtCpf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="11"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Já tem conta -->
-    <TextView
-        android:id="@+id/txtEntrar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Já tem conta? Entrar"
-        android:textSize="14sp"
-        android:textColor="#1E88E5"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btnCadastrar"
-        app:layout_constraintStart_toStartOf="@id/btnCadastrar"
-        app:layout_constraintEnd_toEndOf="@id/btnCadastrar"
-        android:layout_marginTop="20dp"/>
+        <!-- Campo Telefone -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutTelefone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Telefone"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutCpf"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="12dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtTelefone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="E-mail"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutTelefone"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo Curso -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutCurso"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Selecione seu curso"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutEmail"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="12dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteCurso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:padding="16dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo Senha -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutSenha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Senha"
+            app:passwordToggleEnabled="true"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutCurso"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botão Cadastrar -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCadastrar"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:text="Cadastrar"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#1E88E5"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutSenha"
+            app:layout_constraintStart_toStartOf="@id/layoutNome"
+            app:layout_constraintEnd_toEndOf="@id/layoutNome"
+            android:layout_marginTop="28dp"/>
+
+        <!-- Já tem conta -->
+        <TextView
+            android:id="@+id/txtEntrar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Já tem conta? Entrar"
+            android:textSize="14sp"
+            android:textColor="#1E88E5"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/btnCadastrar"
+            app:layout_constraintStart_toStartOf="@id/btnCadastrar"
+            app:layout_constraintEnd_toEndOf="@id/btnCadastrar"
+            android:layout_marginTop="20dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
