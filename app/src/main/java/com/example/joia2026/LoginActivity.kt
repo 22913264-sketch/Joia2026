@@ -3,10 +3,11 @@ package com.example.joia2026
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.joia2026.R.id
+import com.google.android.material.textfield.TextInputEditText
 
 class LoginActivity : AppCompatActivity() {
 
@@ -14,10 +15,12 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etSenha = findViewById<EditText>(R.id.etSenha)
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
-        val btnIrCadastro = findViewById<TextView>(R.id.btnIrCadastro)
+        // Usando TextInputEditText para ser compatível com o TextInputLayout no XML
+        val etEmail = findViewById<TextInputEditText>(id.etEmail)
+        val etSenha = findViewById<TextInputEditText>(id.etSenha)
+        val btnLogin = findViewById<Button>(id.btnLogin)
+        // Corrigido: No layout XML, btnIrCadastro é um TextView, não um Button
+        val btnIrCadastro = findViewById<TextView>(id.btnIrCadastro)
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString()
