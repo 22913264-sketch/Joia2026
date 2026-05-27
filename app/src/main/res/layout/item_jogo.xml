@@ -7,8 +7,9 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="8dp"
     app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="2dp"
-    app:strokeColor="#E0E0E0"
+    app:strokeColor="?attr/colorOutline"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +21,7 @@
             android:id="@+id/txtModalidade"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#1E88E5"
+            android:textColor="?attr/colorPrimary"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +32,7 @@
             android:id="@+id/txtFase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#757575"
+            android:textColor="@color/joia_text_secondary"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:textColor="#1A1A1A"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="Engenharia" />
@@ -62,10 +63,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
-                android:background="#F5F5F5"
+                android:background="@drawable/bg_score"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
-                android:textColor="#1A1A1A"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="2" />
@@ -74,17 +75,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="x"
-                android:textColor="#757575" />
+                android:textColor="@color/joia_text_secondary" />
 
             <TextView
                 android:id="@+id/txtPlacarB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
-                android:background="#F5F5F5"
+                android:background="@drawable/bg_score"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
-                android:textColor="#1A1A1A"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="1" />
@@ -95,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:textColor="#1A1A1A"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="Direito" />
@@ -107,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
-            android:background="#EEEEEE"
+            android:background="@color/joia_outline"
             app:layout_constraintTop_toBottomOf="@id/layoutPlacar" />
 
         <ImageView
@@ -118,14 +119,14 @@
             android:src="@android:drawable/ic_menu_recent_history"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            app:tint="#757575" />
+            app:tint="@color/joia_text_secondary" />
 
         <TextView
             android:id="@+id/txtDataHora"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:textColor="#757575"
+            android:textColor="@color/joia_text_secondary"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/icRelogio"
             app:layout_constraintStart_toEndOf="@id/icRelogio"
@@ -141,7 +142,7 @@
             app:layout_constraintBottom_toBottomOf="@id/icRelogio"
             app:layout_constraintStart_toEndOf="@id/txtDataHora"
             app:layout_constraintTop_toTopOf="@id/icRelogio"
-            app:tint="#757575" />
+            app:tint="@color/joia_text_secondary" />
 
         <TextView
             android:id="@+id/txtLocal"
@@ -150,7 +151,7 @@
             android:layout_marginStart="4dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#757575"
+            android:textColor="@color/joia_text_secondary"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/icLocal"
             app:layout_constraintEnd_toStartOf="@id/chipStatus"

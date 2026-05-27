@@ -51,17 +51,17 @@ class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, J
             when (status) {
                 "EM_ANDAMENTO" -> {
                     chipStatus.text = "AO VIVO"
-                    chipStatus.setChipBackgroundColorResource(android.R.color.holo_red_light)
+                    chipStatus.setChipBackgroundColorResource(R.color.status_live)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 "FINALIZADO" -> {
                     chipStatus.text = "FINALIZADO"
-                    chipStatus.setChipBackgroundColorResource(android.R.color.darker_gray)
+                    chipStatus.setChipBackgroundColorResource(R.color.status_finished)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 else -> { // AGENDADO
                     chipStatus.text = "AGENDADO"
-                    chipStatus.setChipBackgroundColorResource(android.R.color.holo_blue_light)
+                    chipStatus.setChipBackgroundColorResource(R.color.status_scheduled)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
             }
