@@ -2,18 +2,21 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary">#1E63D6</color>
-    <color name="primaryVariant">#174AA0</color>
-    <color name="secondary">#00A884</color>
+    <color name="primary">#FBBF24</color>
+    <color name="primaryVariant">#F59E0B</color>
+    <color name="secondary">#22C55E</color>
 
-    <color name="joia_background">#F4F7FB</color>
+    <color name="joia_background">#F3F6FA</color>
     <color name="joia_surface">#FFFFFF</color>
-    <color name="joia_surface_variant">#EAF0F8</color>
+    <color name="joia_surface_variant">#E9EEF6</color>
     <color name="joia_text">#172033</color>
     <color name="joia_text_secondary">#667085</color>
     <color name="joia_outline">#D8E0EA</color>
     <color name="joia_error">#D32F2F</color>
+    <color name="joia_header">#1E293B</color>
+    <color name="joia_header_text">#F8FAFC</color>
+    <color name="joia_button_text">#111827</color>
     <color name="status_live">#D92D20</color>
-    <color name="status_finished">#667085</color>
-    <color name="status_scheduled">#1E63D6</color>
+    <color name="status_finished">#22C55E</color>
+    <color name="status_scheduled">#64748B</color>
 </resources>

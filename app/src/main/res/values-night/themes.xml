@@ -5,8 +5,8 @@
         <item name="colorSecondary">@color/secondary</item>
         <item name="android:colorAccent">@color/primary</item>
         <item name="android:fontFamily">sans</item>
-        <item name="android:navigationBarColor">@color/joia_surface</item>
-        <item name="android:statusBarColor">@color/joia_background</item>
+        <item name="android:navigationBarColor">@color/joia_header</item>
+        <item name="android:statusBarColor">@color/joia_header</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="colorSurface">@color/joia_surface</item>
         <item name="colorSurfaceVariant">@color/joia_surface_variant</item>

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.launch
 
 class JogosFragment : Fragment() {
@@ -20,26 +21,38 @@ class JogosFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var txtMensagem: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    
-    // Inicializando o adapter com um listener de clique
+    private lateinit var chipGroupStatus: ChipGroup
+    private var filtroStatus: String? = null
+
     private val adapter = JogoAdapter { jogo ->
-        // Ação ao clicar no jogo (ex: abrir detalhes)
-        Toast.makeText(context, "Selecionado: ${jogo.equipeA?.nome} x ${jogo.equipeB?.nome}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Selecionado: ${jogo.nomeMandante()} x ${jogo.nomeVisitante()}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_jogos, container, false)
 
         rvJogos = view.findViewById(R.id.rvJogos)
         progressBar = view.findViewById(R.id.progressBar)
         txtMensagem = view.findViewById(R.id.txtMensagem)
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
+        chipGroupStatus = view.findViewById(R.id.chipGroupStatus)
 
         rvJogos.layoutManager = LinearLayoutManager(context)
         rvJogos.adapter = adapter
+
+        chipGroupStatus.setOnCheckedStateChangeListener { _, checkedIds ->
+            filtroStatus = when (checkedIds.firstOrNull()) {
+                R.id.chipAoVivo -> "EM_ANDAMENTO"
+                R.id.chipAgendado -> "AGENDADO"
+                R.id.chipFinalizado -> "FINALIZADO"
+                else -> null
+            }
+            carregarJogos()
+        }
 
         swipeRefresh.setOnRefreshListener {
             carregarJogos()
@@ -54,27 +67,27 @@ class JogosFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 if (!swipeRefresh.isRefreshing) exibirCarregando(true)
-                val response = RetrofitClient.instance.getJogos()
-                
+                val response = RetrofitClient.instance.getJogos(status = filtroStatus)
+
                 if (response.isSuccessful) {
                     val jogos = response.body() ?: emptyList()
                     adapter.submitList(jogos)
-                    
+
                     if (jogos.isEmpty()) {
                         txtMensagem.visibility = View.VISIBLE
-                        txtMensagem.text = "Nenhum jogo disponível no momento."
+                        txtMensagem.text = "Nenhum jogo disponivel no momento."
                     } else {
                         txtMensagem.visibility = View.GONE
                     }
                 } else {
                     Toast.makeText(context, "Erro ao carregar jogos", Toast.LENGTH_SHORT).show()
                     txtMensagem.visibility = View.VISIBLE
-                    txtMensagem.text = "Falha na conexão com o servidor."
+                    txtMensagem.text = "Falha na conexao com o servidor."
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Erro de conexao: ${e.message}", Toast.LENGTH_SHORT).show()
                 txtMensagem.visibility = View.VISIBLE
-                txtMensagem.text = "Verifique sua conexão com a internet."
+                txtMensagem.text = "Verifique sua conexao com a internet."
             } finally {
                 exibirCarregando(false)
                 swipeRefresh.isRefreshing = false

@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, JogoAdapter.JogoViewHolder>(JogoDiffCallback()) {
 
@@ -33,21 +36,21 @@ class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, J
         private val chipStatus: Chip = itemView.findViewById(R.id.chipStatus)
 
         fun bind(jogo: Jogo) {
-            txtModalidade.text = jogo.modalidade?.nome ?: "Modalidade"
-            txtFase.text = jogo.fase
-            txtEquipeA.text = jogo.equipeA?.nome ?: "TBD"
-            txtEquipeB.text = jogo.equipeB?.nome ?: "TBD"
-            txtPlacarA.text = (jogo.placarA ?: 0).toString()
-            txtPlacarB.text = (jogo.placarB ?: 0).toString()
-            txtDataHora.text = jogo.dataHora
-            txtLocal.text = jogo.local
+            txtModalidade.text = jogo.modalidade?.nome?.uppercase() ?: "MODALIDADE"
+            txtFase.text = formatarFase(jogo.fase)
+            txtEquipeA.text = textoEquipe(jogo.nomeMandante(), jogo.cursoMandante())
+            txtEquipeB.text = textoEquipe(jogo.nomeVisitante(), jogo.cursoVisitante())
+            txtPlacarA.text = jogo.placarMandanteTela().toString()
+            txtPlacarB.text = jogo.placarVisitanteTela().toString()
+            txtDataHora.text = formatarData(jogo.dataHoraTela())
+            txtLocal.text = jogo.local ?: "Local nao informado"
             
             configurarStatus(jogo.status)
 
             itemView.setOnClickListener { onJogoClick(jogo) }
         }
 
-        private fun configurarStatus(status: String) {
+        private fun configurarStatus(status: String?) {
             when (status) {
                 "EM_ANDAMENTO" -> {
                     chipStatus.text = "AO VIVO"
@@ -55,8 +58,13 @@ class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, J
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 "FINALIZADO" -> {
-                    chipStatus.text = "FINALIZADO"
+                    chipStatus.text = "FINAL"
                     chipStatus.setChipBackgroundColorResource(R.color.status_finished)
+                    chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
+                }
+                "CANCELADO" -> {
+                    chipStatus.text = "CANCELADO"
+                    chipStatus.setChipBackgroundColorResource(R.color.status_live)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 else -> { // AGENDADO
@@ -64,6 +72,30 @@ class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, J
                     chipStatus.setChipBackgroundColorResource(R.color.status_scheduled)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
+            }
+        }
+
+        private fun formatarFase(fase: String?): String {
+            return fase
+                ?.replace("_", " ")
+                ?.lowercase()
+                ?.replaceFirstChar { it.titlecase() }
+                ?: "Fase"
+        }
+
+        private fun textoEquipe(nome: String, curso: String): String {
+            return if (curso.isBlank()) nome else "$nome\n$curso"
+        }
+
+        private fun formatarData(valor: String): String {
+            if (valor.isBlank()) return "Data nao informada"
+
+            return try {
+                val formatter = DateTimeFormatter.ofPattern("dd/MM, HH:mm")
+                    .withZone(ZoneId.systemDefault())
+                formatter.format(Instant.parse(valor))
+            } catch (_: Exception) {
+                valor
             }
         }
     }
