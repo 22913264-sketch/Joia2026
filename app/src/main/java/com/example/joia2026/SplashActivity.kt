@@ -12,10 +12,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val prefs = getSharedPreferences("JoiaPrefs", MODE_PRIVATE)
-            val token = prefs.getString("token", null)
-
-            val intent = if (token != null) {
+            val intent = if (UserSession.isLoggedIn(this)) {
                 Intent(this, MainActivity::class.java)
             } else {
                 Intent(this, LoginActivity::class.java)

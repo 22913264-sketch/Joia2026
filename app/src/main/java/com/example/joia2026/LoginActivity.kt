@@ -2,6 +2,7 @@ package com.example.joia2026
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -11,15 +12,29 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etSenha: TextInputEditText
+    private lateinit var cardUltimoCadastro: View
+    private lateinit var txtNomeCadastrado: TextView
+    private lateinit var txtEmailCadastrado: TextView
+    private lateinit var txtCpfCadastrado: TextView
+    private lateinit var txtTelefoneCadastrado: TextView
+    private lateinit var txtCursoCadastrado: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
-        val etSenha = findViewById<TextInputEditText>(R.id.etSenha)
+        etEmail = findViewById(R.id.etEmail)
+        etSenha = findViewById(R.id.etSenha)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnIrCadastro = findViewById<TextView>(R.id.btnIrCadastro)
+        cardUltimoCadastro = findViewById(R.id.cardUltimoCadastro)
+        txtNomeCadastrado = findViewById(R.id.txtNomeCadastrado)
+        txtEmailCadastrado = findViewById(R.id.txtEmailCadastrado)
+        txtCpfCadastrado = findViewById(R.id.txtCpfCadastrado)
+        txtTelefoneCadastrado = findViewById(R.id.txtTelefoneCadastrado)
+        txtCursoCadastrado = findViewById(R.id.txtCursoCadastrado)
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
@@ -39,9 +54,9 @@ class LoginActivity : AppCompatActivity() {
                         val authResponse = response.body()
                         val token = authResponse?.token
                         
-                        // Salvar o token para uso futuro
-                        val prefs = getSharedPreferences("JoiaPrefs", MODE_PRIVATE)
-                        prefs.edit().putString("token", token).apply()
+                        UserSession.saveToken(this@LoginActivity, token)
+                        UserSession.saveLoggedUser(this@LoginActivity, authResponse?.user)
+                        UserSession.markLoggedIn(this@LoginActivity)
 
                         Toast.makeText(this@LoginActivity, "Bem-vindo, ${authResponse?.user?.nome}!", Toast.LENGTH_SHORT).show()
 
@@ -61,5 +76,28 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, CadastroActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        atualizarDadosCadastrados()
+    }
+
+    private fun atualizarDadosCadastrados() {
+        val userData = UserSession.getUserData(this)
+        if (userData.email.isNullOrBlank()) {
+            cardUltimoCadastro.visibility = View.GONE
+            return
+        }
+
+        cardUltimoCadastro.visibility = View.VISIBLE
+        if (etEmail.text.isNullOrBlank()) {
+            etEmail.setText(userData.email)
+        }
+        txtNomeCadastrado.text = userData.nome.orEmpty()
+        txtEmailCadastrado.text = userData.email
+        txtCpfCadastrado.text = "CPF: ${userData.cpf.orEmpty()}"
+        txtTelefoneCadastrado.text = "Telefone: ${userData.telefone.orEmpty()}"
+        txtCursoCadastrado.text = "Curso: ${userData.cursoNome.orEmpty()}"
     }
 }

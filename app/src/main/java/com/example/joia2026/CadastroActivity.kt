@@ -94,6 +94,17 @@ class CadastroActivity : AppCompatActivity() {
                     try {
                         val response = RetrofitClient.instance.register(request)
                         if (response.isSuccessful) {
+                            val authResponse = response.body()
+                            UserSession.saveRegisteredUser(
+                                context = this@CadastroActivity,
+                                nome = authResponse?.user?.nome ?: nome,
+                                email = authResponse?.user?.email ?: email,
+                                cpf = authResponse?.user?.cpf ?: cpf,
+                                telefone = authResponse?.user?.telefone ?: telefone,
+                                id = authResponse?.user?.id,
+                                cursoId = authResponse?.user?.cursoId ?: cursoSelecionado.id,
+                                cursoNome = cursoSelecionado.nome
+                            )
                             Toast.makeText(this@CadastroActivity, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
                             finish() // Volta para o login
                         } else {

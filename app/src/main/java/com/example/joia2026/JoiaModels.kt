@@ -55,5 +55,7 @@ data class User(
     val nome: String,
     val email: String,
     val role: String,
-    val cursoId: String? = null
+    val cursoId: String? = null,
+    val cpf: String? = null,
+    val telefone: String? = null
 )
