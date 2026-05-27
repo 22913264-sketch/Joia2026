@@ -10,18 +10,18 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 
-class JogoAdapter : ListAdapter<Jogo, JogoAdapter.JogoViewHolder>(JogoDiffCallback()) {
+class JogoAdapter(private val onJogoClick: (Jogo) -> Unit) : ListAdapter<Jogo, JogoAdapter.JogoViewHolder>(JogoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JogoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_jogo, parent, false)
-        return JogoViewHolder(view)
+        return JogoViewHolder(view, onJogoClick)
     }
 
     override fun onBindViewHolder(holder: JogoViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class JogoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class JogoViewHolder(itemView: View, private val onJogoClick: (Jogo) -> Unit) : RecyclerView.ViewHolder(itemView) {
         private val txtModalidade: TextView = itemView.findViewById(R.id.txtModalidade)
         private val txtFase: TextView = itemView.findViewById(R.id.txtFase)
         private val txtEquipeA: TextView = itemView.findViewById(R.id.txtEquipeA)
@@ -39,14 +39,15 @@ class JogoAdapter : ListAdapter<Jogo, JogoAdapter.JogoViewHolder>(JogoDiffCallba
             txtEquipeB.text = jogo.equipeB?.nome ?: "TBD"
             txtPlacarA.text = (jogo.placarA ?: 0).toString()
             txtPlacarB.text = (jogo.placarB ?: 0).toString()
-            txtDataHora.text = jogo.dataHora // Idealmente formatar aqui
+            txtDataHora.text = jogo.dataHora
             txtLocal.text = jogo.local
             
             configurarStatus(jogo.status)
+
+            itemView.setOnClickListener { onJogoClick(jogo) }
         }
 
         private fun configurarStatus(status: String) {
-            chipStatus.text = status
             when (status) {
                 "EM_ANDAMENTO" -> {
                     chipStatus.text = "AO VIVO"
@@ -54,10 +55,12 @@ class JogoAdapter : ListAdapter<Jogo, JogoAdapter.JogoViewHolder>(JogoDiffCallba
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 "FINALIZADO" -> {
+                    chipStatus.text = "FINALIZADO"
                     chipStatus.setChipBackgroundColorResource(android.R.color.darker_gray)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 else -> { // AGENDADO
+                    chipStatus.text = "AGENDADO"
                     chipStatus.setChipBackgroundColorResource(android.R.color.holo_blue_light)
                     chipStatus.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
