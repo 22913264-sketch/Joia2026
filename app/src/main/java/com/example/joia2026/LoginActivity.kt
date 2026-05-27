@@ -6,8 +6,9 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.joia2026.R.id
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -15,25 +16,44 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Usando TextInputEditText para ser compatível com o TextInputLayout no XML
-        val etEmail = findViewById<TextInputEditText>(id.etEmail)
-        val etSenha = findViewById<TextInputEditText>(id.etSenha)
-        val btnLogin = findViewById<Button>(id.btnLogin)
-        // Corrigido: No layout XML, btnIrCadastro é um TextView, não um Button
-        val btnIrCadastro = findViewById<TextView>(id.btnIrCadastro)
+        val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
+        val etSenha = findViewById<TextInputEditText>(R.id.etSenha)
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val btnIrCadastro = findViewById<TextView>(R.id.btnIrCadastro)
 
         btnLogin.setOnClickListener {
-            val email = etEmail.text.toString()
-            val senha = etSenha.text.toString()
+            val email = etEmail.text.toString().trim()
+            val senha = etSenha.text.toString().trim()
 
-            if (email == "admin@email.com" && senha == "123456") {
-                Toast.makeText(this, "Login realizado!", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty() || senha.isEmpty()) {
+                Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Email ou senha inválidos", Toast.LENGTH_SHORT).show()
+            // Chamada real da API usando Coroutines
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.instance.login(LoginRequest(email, senha))
+                    
+                    if (response.isSuccessful) {
+                        val authResponse = response.body()
+                        val token = authResponse?.token
+                        
+                        // Salvar o token para uso futuro
+                        val prefs = getSharedPreferences("JoiaPrefs", MODE_PRIVATE)
+                        prefs.edit().putString("token", token).apply()
+
+                        Toast.makeText(this@LoginActivity, "Bem-vindo, ${authResponse?.user?.nome}!", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Email ou senha incorretos", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@LoginActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

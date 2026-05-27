@@ -2,15 +2,18 @@ package com.example.joia2026
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 
 class CadastroActivity : AppCompatActivity() {
 
@@ -30,6 +33,8 @@ class CadastroActivity : AppCompatActivity() {
 
     private lateinit var btnCadastrar: MaterialButton
     private lateinit var txtEntrar: TextView
+
+    private var listaCursos: List<Curso> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,10 +59,8 @@ class CadastroActivity : AppCompatActivity() {
         btnCadastrar = findViewById(R.id.btnCadastrar)
         txtEntrar = findViewById(R.id.txtEntrar)
 
-        // Configurar lista de cursos
-        val cursos = arrayOf("Análise e Desenvolvimento de Sistemas", "Engenharia de Software", "Sistemas de Informação", "Ciência da Computação")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, cursos)
-        autoCompleteCurso.setAdapter(adapter)
+        // Carregar cursos da API
+        carregarCursos()
 
         btnCadastrar.setOnClickListener {
             limparErros()
@@ -66,21 +69,61 @@ class CadastroActivity : AppCompatActivity() {
             val cpf = edtCpf.text.toString().trim()
             val telefone = edtTelefone.text.toString().trim()
             val email = edtEmail.text.toString().trim()
-            val curso = autoCompleteCurso.text.toString().trim()
+            val cursoNome = autoCompleteCurso.text.toString().trim()
             val senha = edtSenha.text.toString().trim()
 
-            val valido = validarCampos(nome, cpf, telefone, email, curso, senha)
+            val valido = validarCampos(nome, cpf, telefone, email, cursoNome, senha)
 
             if (valido) {
-                Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                val cursoSelecionado = listaCursos.find { it.nome == cursoNome }
+                if (cursoSelecionado == null) {
+                    layoutCurso.error = "Selecione um curso válido"
+                    return@setOnClickListener
+                }
+
+                val request = RegisterRequest(
+                    nome = nome,
+                    email = email,
+                    senha = senha,
+                    cpf = cpf,
+                    telefone = telefone,
+                    cursoId = cursoSelecionado.id
+                )
+
+                lifecycleScope.launch {
+                    try {
+                        val response = RetrofitClient.instance.register(request)
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@CadastroActivity, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                            finish() // Volta para o login
+                        } else {
+                            Toast.makeText(this@CadastroActivity, "Erro ao cadastrar: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this@CadastroActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
 
         txtEntrar.setOnClickListener {
             finish()
+        }
+    }
+
+    private fun carregarCursos() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.getCursos()
+                if (response.isSuccessful) {
+                    listaCursos = response.body() ?: emptyList()
+                    val nomesCursos = listaCursos.map { it.nome }
+                    val adapter = ArrayAdapter(this@CadastroActivity, android.R.layout.simple_dropdown_item_1line, nomesCursos)
+                    autoCompleteCurso.setAdapter(adapter)
+                }
+            } catch (e: Exception) {
+                Log.e("Cadastro", "Erro ao carregar cursos: ${e.message}")
+            }
         }
     }
 
@@ -102,7 +145,7 @@ class CadastroActivity : AppCompatActivity() {
         }
 
         if (cpf.length != 11) {
-            layoutCpf.error = "CPF inválido"
+            layoutCpf.error = "CPF deve ter 11 dígitos"
             ok = false
         }
 
@@ -122,7 +165,7 @@ class CadastroActivity : AppCompatActivity() {
         }
 
         if (senha.length < 6) {
-            layoutSenha.error = "Senha muito curta"
+            layoutSenha.error = "Senha deve ter no mínimo 6 caracteres"
             ok = false
         }
 
