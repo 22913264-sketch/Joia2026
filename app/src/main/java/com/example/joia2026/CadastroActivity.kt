@@ -22,6 +22,7 @@ class CadastroActivity : AppCompatActivity() {
     private lateinit var layoutTelefone: TextInputLayout
     private lateinit var layoutEmail: TextInputLayout
     private lateinit var layoutCurso: TextInputLayout
+    private lateinit var layoutRole: TextInputLayout
     private lateinit var layoutSenha: TextInputLayout
 
     private lateinit var edtNome: TextInputEditText
@@ -29,6 +30,7 @@ class CadastroActivity : AppCompatActivity() {
     private lateinit var edtTelefone: TextInputEditText
     private lateinit var edtEmail: TextInputEditText
     private lateinit var autoCompleteCurso: AutoCompleteTextView
+    private lateinit var autoCompleteRole: AutoCompleteTextView
     private lateinit var edtSenha: TextInputEditText
 
     private lateinit var btnCadastrar: MaterialButton
@@ -46,6 +48,7 @@ class CadastroActivity : AppCompatActivity() {
         layoutTelefone = findViewById(R.id.layoutTelefone)
         layoutEmail = findViewById(R.id.layoutEmail)
         layoutCurso = findViewById(R.id.layoutCurso)
+        layoutRole = findViewById(R.id.layoutRole)
         layoutSenha = findViewById(R.id.layoutSenha)
 
         // Inputs
@@ -54,6 +57,7 @@ class CadastroActivity : AppCompatActivity() {
         edtTelefone = findViewById(R.id.edtTelefone)
         edtEmail = findViewById(R.id.edtEmail)
         autoCompleteCurso = findViewById(R.id.autoCompleteCurso)
+        autoCompleteRole = findViewById(R.id.autoCompleteRole)
         edtSenha = findViewById(R.id.edtSenha)
 
         btnCadastrar = findViewById(R.id.btnCadastrar)
@@ -61,6 +65,7 @@ class CadastroActivity : AppCompatActivity() {
 
         // Carregar cursos da API
         carregarCursos()
+        configurarTiposUsuario()
 
         btnCadastrar.setOnClickListener {
             limparErros()
@@ -70,9 +75,10 @@ class CadastroActivity : AppCompatActivity() {
             val telefone = edtTelefone.text.toString().trim()
             val email = edtEmail.text.toString().trim()
             val cursoNome = autoCompleteCurso.text.toString().trim()
+            val roleNome = autoCompleteRole.text.toString().trim()
             val senha = edtSenha.text.toString().trim()
 
-            val valido = validarCampos(nome, cpf, telefone, email, cursoNome, senha)
+            val valido = validarCampos(nome, cpf, telefone, email, cursoNome, roleNome, senha)
 
             if (valido) {
                 val cursoSelecionado = listaCursos.find { it.nome == cursoNome }
@@ -87,7 +93,8 @@ class CadastroActivity : AppCompatActivity() {
                     senha = senha,
                     cpf = cpf,
                     telefone = telefone,
-                    cursoId = cursoSelecionado.id
+                    cursoId = cursoSelecionado.id,
+                    role = roleFromLabel(roleNome)
                 )
 
                 lifecycleScope.launch {
@@ -103,7 +110,8 @@ class CadastroActivity : AppCompatActivity() {
                                 telefone = authResponse?.user?.telefone ?: telefone,
                                 id = authResponse?.user?.id,
                                 cursoId = authResponse?.user?.cursoId ?: cursoSelecionado.id,
-                                cursoNome = cursoSelecionado.nome
+                                cursoNome = cursoSelecionado.nome,
+                                role = authResponse?.user?.role ?: request.role
                             )
                             Toast.makeText(this@CadastroActivity, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
                             finish() // Volta para o login
@@ -135,16 +143,23 @@ class CadastroActivity : AppCompatActivity() {
         }
     }
 
+    private fun configurarTiposUsuario() {
+        val tipos = listOf("Visualizador", "Administrador")
+        autoCompleteRole.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, tipos))
+        autoCompleteRole.setText(tipos.first(), false)
+    }
+
     private fun limparErros() {
         layoutNome.error = null
         layoutCpf.error = null
         layoutTelefone.error = null
         layoutEmail.error = null
         layoutCurso.error = null
+        layoutRole.error = null
         layoutSenha.error = null
     }
 
-    private fun validarCampos(nome: String, cpf: String, telefone: String, email: String, curso: String, senha: String): Boolean {
+    private fun validarCampos(nome: String, cpf: String, telefone: String, email: String, curso: String, role: String, senha: String): Boolean {
         var ok = true
 
         if (nome.isEmpty()) {
@@ -167,11 +182,24 @@ class CadastroActivity : AppCompatActivity() {
             ok = false
         }
 
+        if (roleFromLabel(role).isBlank()) {
+            layoutRole.error = "Selecione o tipo de usuario"
+            ok = false
+        }
+
         if (senha.length < 6) {
             layoutSenha.error = "Senha deve ter no mínimo 6 caracteres"
             ok = false
         }
 
         return ok
+    }
+
+    private fun roleFromLabel(label: String): String {
+        return when (label) {
+            "Administrador" -> "ADMIN"
+            "Visualizador" -> "VIEWER"
+            else -> ""
+        }
     }
 }

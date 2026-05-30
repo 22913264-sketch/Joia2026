@@ -54,6 +54,12 @@ interface JoiaApiService {
     @GET("equipes/{id}")
     suspend fun getEquipe(@Path("id") id: String): Response<Equipe>
 
+    @POST("equipes")
+    suspend fun createEquipe(@Body request: CreateEquipeRequest): Response<Equipe>
+
+    @DELETE("equipes/{id}")
+    suspend fun deleteEquipe(@Path("id") id: String): Response<Unit>
+
     @GET("ranking/geral")
     suspend fun getRankingGeral(): Response<List<RankingGeralItem>>
 

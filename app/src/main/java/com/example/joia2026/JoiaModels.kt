@@ -105,7 +105,8 @@ data class RegisterRequest(
     val senha: String,
     val cpf: String?,
     val telefone: String?,
-    val cursoId: String
+    val cursoId: String,
+    val role: String = "VIEWER"
 )
 
 data class UpdateProfileRequest(
@@ -117,6 +118,12 @@ data class UpdateProfileRequest(
 
 data class ScoreRequest(val placarMandante: Int, val placarVisitante: Int)
 data class CartaoRequest(val tipo: String, val atletaId: String, val motivo: String?)
+data class CreateEquipeRequest(
+    val nome: String,
+    val cursoId: String,
+    val modalidadeId: String,
+    val genero: String?
+)
 
 data class AuthResponse(
     val user: User,

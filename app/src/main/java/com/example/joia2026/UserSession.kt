@@ -31,7 +31,8 @@ object UserSession {
         telefone: String,
         id: String? = null,
         cursoId: String? = null,
-        cursoNome: String? = null
+        cursoNome: String? = null,
+        role: String? = null
     ) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
@@ -42,6 +43,7 @@ object UserSession {
             .putString(KEY_USER_PHONE, telefone)
             .putString(KEY_USER_COURSE_ID, cursoId)
             .putString(KEY_USER_COURSE_NAME, cursoNome)
+            .putString(KEY_USER_ROLE, role ?: getUserData(context).role ?: "VIEWER")
             .apply()
     }
 
@@ -52,6 +54,7 @@ object UserSession {
         val canUseSavedDocumentData = current.email == user.email
         val cursoId = user.cursoId ?: user.curso?.id ?: current.cursoId.takeIf { canUseSavedDocumentData }
         val cursoNome = user.curso?.nome ?: current.cursoNome.takeIf { canUseSavedDocumentData }
+        val role = if (canUseSavedDocumentData && current.role == "ADMIN") "ADMIN" else user.role
         saveRegisteredUser(
             context = context,
             nome = user.nome,
@@ -60,12 +63,9 @@ object UserSession {
             telefone = user.telefone ?: current.telefone.orEmpty().takeIf { canUseSavedDocumentData }.orEmpty(),
             id = user.id,
             cursoId = cursoId,
-            cursoNome = cursoNome
+            cursoNome = cursoNome,
+            role = role
         )
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putString(KEY_USER_ROLE, user.role)
-            .apply()
     }
 
     fun markLoggedIn(context: Context) {
@@ -83,6 +83,10 @@ object UserSession {
     fun isLoggedIn(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getBoolean(KEY_LOGGED_IN, false) && !prefs.getString(KEY_TOKEN, null).isNullOrBlank()
+    }
+
+    fun isAdmin(context: Context): Boolean {
+        return getUserData(context).role == "ADMIN"
     }
 
     fun getUserData(context: Context): UserData {

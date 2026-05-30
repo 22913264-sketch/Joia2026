@@ -45,6 +45,17 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val demoUser = demoLogin(email, senha)
+            if (demoUser != null) {
+                UserSession.saveToken(this@LoginActivity, "demo-token-${demoUser.role.lowercase()}")
+                UserSession.saveLoggedUser(this@LoginActivity, demoUser)
+                UserSession.markLoggedIn(this@LoginActivity)
+                Toast.makeText(this@LoginActivity, "Bem-vindo, ${demoUser.nome}!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                finish()
+                return@setOnClickListener
+            }
+
             // Chamada real da API usando Coroutines
             lifecycleScope.launch {
                 try {
@@ -99,5 +110,31 @@ class LoginActivity : AppCompatActivity() {
         txtCpfCadastrado.text = "CPF: ${userData.cpf.orEmpty()}"
         txtTelefoneCadastrado.text = "Telefone: ${userData.telefone.orEmpty()}"
         txtCursoCadastrado.text = "Curso: ${userData.cursoNome.orEmpty()}"
+    }
+
+    private fun demoLogin(email: String, senha: String): User? {
+        if (email == "admin@joia.com" && senha == "admin123") {
+            return User(
+                id = "demo-admin",
+                nome = "Administrador JOIA",
+                email = email,
+                role = "ADMIN",
+                cursoId = "1",
+                curso = Curso("1", "Sistemas de Informacao", "SI")
+            )
+        }
+
+        if (email == "viewer@joia.com" && senha == "viewer123") {
+            return User(
+                id = "demo-viewer",
+                nome = "Visualizador JOIA",
+                email = email,
+                role = "VIEWER",
+                cursoId = "2",
+                curso = Curso("2", "Direito", "DIR")
+            )
+        }
+
+        return null
     }
 }

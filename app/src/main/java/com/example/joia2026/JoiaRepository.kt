@@ -16,14 +16,14 @@ object JoiaRepository {
         Modalidade("3", "Xadrez", "Individual", "Sistema suiço entre atletas inscritos.", "Ritmo rapido.", 4, 14, 24)
     )
 
-    private val equipesDemo = listOf(
+    private val equipesDemo = mutableListOf(
         Equipe("1", "SI Alpha", cursosDemo[0], modalidadesDemo[0], "MASCULINO", atletasDemo("SI", true)),
         Equipe("2", "Direito FC", cursosDemo[1], modalidadesDemo[0], "MASCULINO", atletasDemo("DIR", false)),
         Equipe("3", "Enfermagem Volei", cursosDemo[2], modalidadesDemo[1], "FEMININO", atletasDemo("ENF", true)),
         Equipe("4", "ADM Volei", cursosDemo[3], modalidadesDemo[1], "FEMININO", atletasDemo("ADM", false))
     )
 
-    private val jogosDemo = listOf(
+    private val jogosDemo = mutableListOf(
         Jogo("1", iniciaEm = "2026-06-01T18:00:00Z", local = "Ginasio principal", fase = "CLASSIFICATORIA", status = "EM_ANDAMENTO", placarMandante = 2, placarVisitante = 1, mandante = equipesDemo[0], visitante = equipesDemo[1], modalidade = modalidadesDemo[0], cartoes = listOf(Cartao("1", "AMARELO", equipesDemo[0].atletas.first(), "Reclamacao"))),
         Jogo("2", iniciaEm = "2026-06-01T20:00:00Z", local = "Quadra 2", fase = "CLASSIFICATORIA", status = "AGENDADO", mandante = equipesDemo[2], visitante = equipesDemo[3], modalidade = modalidadesDemo[1]),
         Jogo("3", iniciaEm = "2026-06-02T19:00:00Z", local = "Sala multiuso", fase = "SEMI_FINAL", status = "AGENDADO", mandante = equipesDemo[0], visitante = equipesDemo[3], modalidade = modalidadesDemo[2]),
@@ -60,9 +60,76 @@ object JoiaRepository {
     suspend fun getEquipes(cursoId: String? = null, modalidadeId: String? = null, genero: String? = null): List<Equipe> {
         return try {
             val response = RetrofitClient.instance.getEquipes(cursoId, modalidadeId, genero)
-            if (response.isSuccessful) response.body().orEmpty() else fallbackEquipes(cursoId, modalidadeId, genero)
+            if (response.isSuccessful) {
+                mergeEquipes(response.body().orEmpty()).filter { equipe ->
+                    (cursoId == null || equipe.curso?.id == cursoId) &&
+                        (modalidadeId == null || equipe.modalidade?.id == modalidadeId) &&
+                        (genero == null || equipe.genero == genero)
+                }
+            } else {
+                fallbackEquipes(cursoId, modalidadeId, genero)
+            }
         } catch (_: Exception) {
             fallbackEquipes(cursoId, modalidadeId, genero)
+        }
+    }
+
+    suspend fun createEquipe(nome: String, cursoId: String, modalidadeId: String, genero: String?): Equipe {
+        val curso = cursosDemo.find { it.id == cursoId } ?: cursosDemo.first()
+        val modalidade = modalidadesDemo.find { it.id == modalidadeId } ?: modalidadesDemo.first()
+        val equipe = Equipe(
+            id = "local-${System.currentTimeMillis()}",
+            nome = nome,
+            curso = curso,
+            modalidade = modalidade,
+            genero = genero,
+            atletas = emptyList()
+        )
+
+        equipesDemo.add(equipe)
+
+        try {
+            val response = RetrofitClient.instance.createEquipe(
+                CreateEquipeRequest(nome = nome, cursoId = cursoId, modalidadeId = modalidadeId, genero = genero)
+            )
+            if (response.isSuccessful) {
+                response.body()?.let { apiEquipe ->
+                    equipesDemo.removeAll { it.id == equipe.id }
+                    equipesDemo.add(apiEquipe)
+                    return apiEquipe
+                }
+            }
+        } catch (_: Exception) {
+        }
+
+        return equipe
+    }
+
+    suspend fun deleteEquipe(equipeId: String): Boolean {
+        equipesDemo.removeAll { it.id == equipeId }
+        return try {
+            val response = RetrofitClient.instance.deleteEquipe(equipeId)
+            response.isSuccessful
+        } catch (_: Exception) {
+            true
+        }
+    }
+
+    suspend fun updatePlacar(jogoId: String, mandante: Int, visitante: Int): Jogo? {
+        val index = jogosDemo.indexOfFirst { it.id == jogoId }
+        if (index >= 0) {
+            jogosDemo[index] = jogosDemo[index].copy(
+                placarMandante = mandante,
+                placarVisitante = visitante,
+                status = "EM_ANDAMENTO"
+            )
+        }
+
+        return try {
+            val response = RetrofitClient.instance.updatePlacar(jogoId, ScoreRequest(mandante, visitante))
+            if (response.isSuccessful) response.body() else jogosDemo.getOrNull(index)
+        } catch (_: Exception) {
+            jogosDemo.getOrNull(index)
         }
     }
 
@@ -114,6 +181,11 @@ object JoiaRepository {
                 (modalidadeId == null || equipe.modalidade?.id == modalidadeId) &&
                 (genero == null || equipe.genero == genero)
         }
+    }
+
+    private fun mergeEquipes(apiEquipes: List<Equipe>): List<Equipe> {
+        val apiIds = apiEquipes.map { it.id }.toSet()
+        return apiEquipes + equipesDemo.filter { it.id !in apiIds }
     }
 
     private fun rankingDemo(): List<RankingGeralItem> {

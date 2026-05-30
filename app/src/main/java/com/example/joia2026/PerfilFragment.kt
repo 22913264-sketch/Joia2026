@@ -89,7 +89,7 @@ class PerfilFragment : Fragment() {
                 .commit()
         }
 
-        if (UserSession.getUserData(requireContext()).role == "ADMIN") {
+        if (UserSession.isAdmin(requireContext())) {
             btnAdmin.visibility = View.VISIBLE
         }
         btnAdmin.setOnClickListener {

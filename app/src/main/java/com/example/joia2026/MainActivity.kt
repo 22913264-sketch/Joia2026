@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.menu.findItem(R.id.nav_admin).isVisible = UserSession.isAdmin(this)
         
         // Define o fragmento inicial
         if (savedInstanceState == null) {
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_equipes -> {
                     replaceFragment(EquipesFragment())
+                    true
+                }
+                R.id.nav_admin -> {
+                    replaceFragment(AdminFragment())
                     true
                 }
                 else -> false
