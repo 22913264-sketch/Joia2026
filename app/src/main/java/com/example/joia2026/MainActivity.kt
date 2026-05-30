@@ -38,6 +38,18 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(PerfilFragment())
                     true
                 }
+                R.id.nav_ranking -> {
+                    replaceFragment(RankingFragment())
+                    true
+                }
+                R.id.nav_modalidades -> {
+                    replaceFragment(ModalidadesFragment())
+                    true
+                }
+                R.id.nav_equipes -> {
+                    replaceFragment(EquipesFragment())
+                    true
+                }
                 else -> false
             }
         }

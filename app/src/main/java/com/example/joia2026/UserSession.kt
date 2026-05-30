@@ -13,6 +13,7 @@ object UserSession {
     private const val KEY_USER_PHONE = "user_phone"
     private const val KEY_USER_COURSE_ID = "user_course_id"
     private const val KEY_USER_COURSE_NAME = "user_course_name"
+    private const val KEY_USER_ROLE = "user_role"
     private const val KEY_PROFILE_PHOTO_URI = "profile_photo_uri"
 
     fun saveToken(context: Context, token: String?) {
@@ -49,8 +50,8 @@ object UserSession {
 
         val current = getUserData(context)
         val canUseSavedDocumentData = current.email == user.email
-        val cursoId = user.cursoId ?: current.cursoId.takeIf { canUseSavedDocumentData }
-        val cursoNome = current.cursoNome.takeIf { canUseSavedDocumentData }
+        val cursoId = user.cursoId ?: user.curso?.id ?: current.cursoId.takeIf { canUseSavedDocumentData }
+        val cursoNome = user.curso?.nome ?: current.cursoNome.takeIf { canUseSavedDocumentData }
         saveRegisteredUser(
             context = context,
             nome = user.nome,
@@ -61,6 +62,10 @@ object UserSession {
             cursoId = cursoId,
             cursoNome = cursoNome
         )
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_USER_ROLE, user.role)
+            .apply()
     }
 
     fun markLoggedIn(context: Context) {
@@ -89,16 +94,26 @@ object UserSession {
             telefone = prefs.getString(KEY_USER_PHONE, null),
             cursoId = prefs.getString(KEY_USER_COURSE_ID, null),
             cursoNome = prefs.getString(KEY_USER_COURSE_NAME, null),
+            role = prefs.getString(KEY_USER_ROLE, null),
             fotoPerfilUri = prefs.getString(KEY_PROFILE_PHOTO_URI, null)
         )
     }
 
-    fun updateProfile(context: Context, nome: String, cursoId: String?, cursoNome: String?) {
+    fun updateProfile(
+        context: Context,
+        nome: String,
+        cursoId: String?,
+        cursoNome: String?,
+        cpf: String? = null,
+        telefone: String? = null
+    ) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_USER_NAME, nome)
             .putString(KEY_USER_COURSE_ID, cursoId)
             .putString(KEY_USER_COURSE_NAME, cursoNome)
+            .putString(KEY_USER_CPF, cpf ?: getUserData(context).cpf)
+            .putString(KEY_USER_PHONE, telefone ?: getUserData(context).telefone)
             .apply()
     }
 
@@ -124,5 +139,6 @@ data class UserData(
     val telefone: String?,
     val cursoId: String?,
     val cursoNome: String?,
+    val role: String?,
     val fotoPerfilUri: String?
 )

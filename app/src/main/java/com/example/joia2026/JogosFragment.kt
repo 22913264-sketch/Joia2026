@@ -1,6 +1,7 @@
 package com.example.joia2026
 
 import android.os.Bundle
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,9 @@ class JogosFragment : Fragment() {
     private var filtroStatus: String? = null
 
     private val adapter = JogoAdapter { jogo ->
-        Toast.makeText(context, "Selecionado: ${jogo.nomeMandante()} x ${jogo.nomeVisitante()}", Toast.LENGTH_SHORT).show()
+        val intent = Intent(requireContext(), JogoDetalheActivity::class.java)
+        intent.putExtra(JogoDetalheActivity.EXTRA_JOGO_ID, jogo.id)
+        startActivity(intent)
     }
 
     override fun onCreateView(
@@ -67,22 +70,20 @@ class JogosFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 if (!swipeRefresh.isRefreshing) exibirCarregando(true)
-                val response = RetrofitClient.instance.getJogos(status = filtroStatus)
-
-                if (response.isSuccessful) {
-                    val jogos = response.body() ?: emptyList()
-                    adapter.submitList(jogos)
-
-                    if (jogos.isEmpty()) {
-                        txtMensagem.visibility = View.VISIBLE
-                        txtMensagem.text = "Nenhum jogo disponivel no momento."
-                    } else {
-                        txtMensagem.visibility = View.GONE
-                    }
+                val jogos = if (filtroStatus == null) {
+                    JoiaRepository.getJogos("EM_ANDAMENTO") +
+                        JoiaRepository.getJogos("AGENDADO") +
+                        JoiaRepository.getJogos("FINALIZADO")
                 } else {
-                    Toast.makeText(context, "Erro ao carregar jogos", Toast.LENGTH_SHORT).show()
+                    JoiaRepository.getJogos(status = filtroStatus)
+                }
+
+                adapter.submitList(jogos)
+                if (jogos.isEmpty()) {
                     txtMensagem.visibility = View.VISIBLE
-                    txtMensagem.text = "Falha na conexao com o servidor."
+                    txtMensagem.text = "Nenhum jogo disponivel no momento."
+                } else {
+                    txtMensagem.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Erro de conexao: ${e.message}", Toast.LENGTH_SHORT).show()

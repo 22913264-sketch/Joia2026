@@ -110,44 +110,43 @@
                         android:padding="16dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <View
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutCpfPerfil"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="18dp"
-                    android:background="@color/joia_outline" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CPF"
-                    android:textColor="@color/joia_text_secondary"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/txtCpfValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="000.000.000-00"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Telefone"
-                    android:textColor="@color/joia_text_secondary"
-                    android:textSize="12sp" />
+                    android:hint="CPF (opcional)"
+                    app:boxBackgroundColor="?attr/colorSurface"
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:hintTextColor="?attr/colorPrimary">
 
-                <TextView
-                    android:id="@+id/txtTelefoneValue"
-                    android:layout_width="wrap_content"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtCpfPerfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutTelefonePerfil"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="16sp" />
+                    android:layout_marginTop="12dp"
+                    android:hint="Telefone (opcional)"
+                    app:boxBackgroundColor="?attr/colorSurface"
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:hintTextColor="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtTelefonePerfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:inputType="phone" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSalvarPerfil"
@@ -161,6 +160,55 @@
                     app:cornerRadius="14dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavoritos"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Ver favoritos"
+            android:textColor="?attr/colorPrimary"
+            app:icon="@android:drawable/btn_star_big_on"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCursos"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Cursos"
+            android:textColor="@color/joia_text"
+            app:icon="@android:drawable/ic_menu_manage"
+            app:iconGravity="textStart"
+            app:iconTint="@color/joia_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegulamento"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Regulamento e sobre"
+            android:textColor="@color/joia_text"
+            app:icon="@android:drawable/ic_menu_info_details"
+            app:iconGravity="textStart"
+            app:iconTint="@color/joia_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAdmin"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Painel admin"
+            android:textColor="@color/joia_text"
+            android:visibility="gone"
+            app:icon="@android:drawable/ic_menu_edit"
+            app:iconGravity="textStart"
+            app:iconTint="@color/joia_text" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSair"

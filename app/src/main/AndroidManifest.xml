@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Joia2026">
         <activity
+            android:name=".JogoDetalheActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity

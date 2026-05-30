@@ -5,6 +5,18 @@
         android:icon="@android:drawable/ic_menu_today"
         android:title="Jogos" />
     <item
+        android:id="@+id/nav_ranking"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Ranking" />
+    <item
+        android:id="@+id/nav_modalidades"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Modalidades" />
+    <item
+        android:id="@+id/nav_equipes"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Equipes" />
+    <item
         android:id="@+id/nav_perfil"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="Perfil" />

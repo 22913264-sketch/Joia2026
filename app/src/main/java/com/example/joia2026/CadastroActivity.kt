@@ -125,13 +125,10 @@ class CadastroActivity : AppCompatActivity() {
     private fun carregarCursos() {
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.instance.getCursos()
-                if (response.isSuccessful) {
-                    listaCursos = response.body() ?: emptyList()
-                    val nomesCursos = listaCursos.map { it.nome }
-                    val adapter = ArrayAdapter(this@CadastroActivity, android.R.layout.simple_dropdown_item_1line, nomesCursos)
-                    autoCompleteCurso.setAdapter(adapter)
-                }
+                listaCursos = JoiaRepository.getCursos()
+                val nomesCursos = listaCursos.map { it.nome }
+                val adapter = ArrayAdapter(this@CadastroActivity, android.R.layout.simple_dropdown_item_1line, nomesCursos)
+                autoCompleteCurso.setAdapter(adapter)
             } catch (e: Exception) {
                 Log.e("Cadastro", "Erro ao carregar cursos: ${e.message}")
             }
@@ -155,13 +152,8 @@ class CadastroActivity : AppCompatActivity() {
             ok = false
         }
 
-        if (cpf.length != 11) {
+        if (cpf.isNotEmpty() && cpf.length != 11) {
             layoutCpf.error = "CPF deve ter 11 dígitos"
-            ok = false
-        }
-
-        if (telefone.isEmpty()) {
-            layoutTelefone.error = "Digite seu telefone"
             ok = false
         }
 

@@ -23,8 +23,8 @@ class PerfilFragment : Fragment() {
     private lateinit var edtNomePerfil: TextInputEditText
     private lateinit var autoCompleteCursoPerfil: AutoCompleteTextView
     private lateinit var txtEmailUsuario: TextView
-    private lateinit var txtCpfValue: TextView
-    private lateinit var txtTelefoneValue: TextView
+    private lateinit var edtCpfPerfil: TextInputEditText
+    private lateinit var edtTelefonePerfil: TextInputEditText
 
     private var listaCursos: List<Curso> = emptyList()
 
@@ -49,11 +49,15 @@ class PerfilFragment : Fragment() {
         edtNomePerfil = view.findViewById(R.id.edtNomePerfil)
         autoCompleteCursoPerfil = view.findViewById(R.id.autoCompleteCursoPerfil)
         txtEmailUsuario = view.findViewById(R.id.txtEmailUsuario)
-        txtCpfValue = view.findViewById(R.id.txtCpfValue)
-        txtTelefoneValue = view.findViewById(R.id.txtTelefoneValue)
+        edtCpfPerfil = view.findViewById(R.id.edtCpfPerfil)
+        edtTelefonePerfil = view.findViewById(R.id.edtTelefonePerfil)
         val btnAlterarFoto = view.findViewById<MaterialButton>(R.id.btnAlterarFoto)
         val btnSalvarPerfil = view.findViewById<MaterialButton>(R.id.btnSalvarPerfil)
         val btnSair = view.findViewById<MaterialButton>(R.id.btnSair)
+        val btnFavoritos = view.findViewById<MaterialButton>(R.id.btnFavoritos)
+        val btnCursos = view.findViewById<MaterialButton>(R.id.btnCursos)
+        val btnRegulamento = view.findViewById<MaterialButton>(R.id.btnRegulamento)
+        val btnAdmin = view.findViewById<MaterialButton>(R.id.btnAdmin)
 
         preencherDados()
         carregarCursos()
@@ -64,6 +68,34 @@ class PerfilFragment : Fragment() {
 
         btnSalvarPerfil.setOnClickListener {
             salvarPerfil()
+        }
+
+        btnFavoritos.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val favoritos = JoiaRepository.getFavoritos(requireContext())
+                Toast.makeText(requireContext(), "${favoritos.size} jogos favoritados", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnRegulamento.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, SobreFragment())
+                .commit()
+        }
+
+        btnCursos.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, CursosFragment())
+                .commit()
+        }
+
+        if (UserSession.getUserData(requireContext()).role == "ADMIN") {
+            btnAdmin.visibility = View.VISIBLE
+        }
+        btnAdmin.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AdminFragment())
+                .commit()
         }
 
         btnSair.setOnClickListener {
@@ -81,8 +113,8 @@ class PerfilFragment : Fragment() {
         edtNomePerfil.setText(userData.nome ?: "Usuario JOIA")
         autoCompleteCursoPerfil.setText(userData.cursoNome.orEmpty(), false)
         txtEmailUsuario.text = userData.email ?: "usuario@email.com"
-        txtCpfValue.text = userData.cpf ?: "000.000.000-00"
-        txtTelefoneValue.text = userData.telefone ?: "-"
+        edtCpfPerfil.setText(userData.cpf.orEmpty())
+        edtTelefonePerfil.setText(userData.telefone.orEmpty())
 
         userData.fotoPerfilUri?.let { uri ->
             imgAvatar.setImageURI(Uri.parse(uri))
@@ -92,17 +124,14 @@ class PerfilFragment : Fragment() {
     private fun carregarCursos() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = RetrofitClient.instance.getCursos()
-                if (response.isSuccessful) {
-                    listaCursos = response.body() ?: emptyList()
-                    val nomesCursos = listaCursos.map { it.nome }
-                    val adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_dropdown_item_1line,
-                        nomesCursos
-                    )
-                    autoCompleteCursoPerfil.setAdapter(adapter)
-                }
+                listaCursos = JoiaRepository.getCursos()
+                val nomesCursos = listaCursos.map { it.nome }
+                val adapter = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    nomesCursos
+                )
+                autoCompleteCursoPerfil.setAdapter(adapter)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Erro ao carregar cursos: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -112,6 +141,8 @@ class PerfilFragment : Fragment() {
     private fun salvarPerfil() {
         val nome = edtNomePerfil.text.toString().trim()
         val cursoNome = autoCompleteCursoPerfil.text.toString().trim()
+        val cpf = edtCpfPerfil.text.toString().trim()
+        val telefone = edtTelefonePerfil.text.toString().trim()
         val cursoSelecionado = listaCursos.find { it.nome == cursoNome }
 
         if (nome.isEmpty()) {
@@ -124,13 +155,28 @@ class PerfilFragment : Fragment() {
             return
         }
 
-        UserSession.updateProfile(
-            context = requireContext(),
-            nome = nome,
-            cursoId = cursoSelecionado?.id,
-            cursoNome = cursoSelecionado?.nome ?: cursoNome.takeIf { it.isNotEmpty() }
-        )
+        viewLifecycleOwner.lifecycleScope.launch {
+            val token = UserSession.getToken(requireContext())
+            if (!token.isNullOrBlank()) {
+                try {
+                    RetrofitClient.instance.updateMe(
+                        "Bearer $token",
+                        UpdateProfileRequest(nome, cpf.ifBlank { null }, telefone.ifBlank { null }, cursoSelecionado?.id)
+                    )
+                } catch (_: Exception) {
+                }
+            }
 
-        Toast.makeText(requireContext(), "Perfil atualizado", Toast.LENGTH_SHORT).show()
+            UserSession.updateProfile(
+                context = requireContext(),
+                nome = nome,
+                cursoId = cursoSelecionado?.id,
+                cursoNome = cursoSelecionado?.nome ?: cursoNome.takeIf { it.isNotEmpty() },
+                cpf = cpf,
+                telefone = telefone
+            )
+
+            Toast.makeText(requireContext(), "Perfil atualizado", Toast.LENGTH_SHORT).show()
+        }
     }
 }
