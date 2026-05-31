@@ -91,17 +91,22 @@ class CadastroActivity : AppCompatActivity() {
                     nome = nome,
                     email = email,
                     senha = senha,
-                    cpf = cpf,
-                    telefone = telefone,
+                    cpf = cpf.ifBlank { null },
+                    telefone = telefone.ifBlank { null },
                     cursoId = cursoSelecionado.id,
                     role = roleFromLabel(roleNome)
                 )
+
+                btnCadastrar.isEnabled = false
 
                 lifecycleScope.launch {
                     try {
                         val response = RetrofitClient.instance.register(request)
                         if (response.isSuccessful) {
                             val authResponse = response.body()
+
+                            // Salva os dados, token e marca como logado para entrar direto
+                            UserSession.saveToken(this@CadastroActivity, authResponse?.token)
                             UserSession.saveRegisteredUser(
                                 context = this@CadastroActivity,
                                 nome = authResponse?.user?.nome ?: nome,
@@ -113,12 +118,24 @@ class CadastroActivity : AppCompatActivity() {
                                 cursoNome = cursoSelecionado.nome,
                                 role = authResponse?.user?.role ?: request.role
                             )
+                            UserSession.markLoggedIn(this@CadastroActivity)
+
                             Toast.makeText(this@CadastroActivity, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                            finish() // Volta para o login
+
+                            // Navega direto para a MainActivity limpando o histórico de telas
+                            val intent = Intent(this@CadastroActivity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
                         } else {
+                            btnCadastrar.isEnabled = true
+                            val errorBody = response.errorBody()?.string()
+                            Log.e("Cadastro", "Erro da API (${response.code()}): $errorBody")
                             Toast.makeText(this@CadastroActivity, "Erro ao cadastrar: ${response.code()}", Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: Exception) {
+                        btnCadastrar.isEnabled = true
+                        Log.e("Cadastro", "Excecao no cadastro", e)
                         Toast.makeText(this@CadastroActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
