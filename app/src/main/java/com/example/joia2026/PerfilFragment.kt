@@ -71,10 +71,9 @@ class PerfilFragment : Fragment() {
         }
 
         btnFavoritos.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                val favoritos = JoiaRepository.getFavoritos(requireContext())
-                Toast.makeText(requireContext(), "${favoritos.size} jogos favoritados", Toast.LENGTH_SHORT).show()
-            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, FavoritosFragment())
+                .commit()
         }
 
         btnRegulamento.setOnClickListener {

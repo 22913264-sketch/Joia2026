@@ -15,6 +15,9 @@ import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 
 class JogoDetalheActivity : AppCompatActivity() {
+    private var isFavorito: Boolean = false
+    private lateinit var btnFavorito: MaterialButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val root = LinearLayout(this).apply {
@@ -24,14 +27,16 @@ class JogoDetalheActivity : AppCompatActivity() {
         }
         setContentView(ScrollView(this).apply { addView(root) })
 
-        val jogoId = intent.getStringExtra(EXTRA_JOGO_ID)
+        val jogoId = intent.getStringExtra(EXTRA_JOGO_ID) ?: return
         lifecycleScope.launch {
-            val jogo = JoiaRepository.getJogos().find { it.id == jogoId }
+            val jogo = JoiaRepository.getJogo(jogoId)
             if (jogo == null) {
                 Toast.makeText(this@JogoDetalheActivity, "Jogo nao encontrado", Toast.LENGTH_SHORT).show()
                 finish()
                 return@launch
             }
+            
+            isFavorito = JoiaRepository.isFavorito(this@JogoDetalheActivity, jogoId)
             montarTela(root, jogo)
         }
     }
@@ -71,21 +76,78 @@ class JogoDetalheActivity : AppCompatActivity() {
     }
 
     private fun actions(jogo: Jogo): LinearLayout {
+        val match = LinearLayout.LayoutParams.MATCH_PARENT
+        val wrap = LinearLayout.LayoutParams.WRAP_CONTENT
+        
         return LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            addView(MaterialButton(context).apply {
-                text = "Favoritar"
-                setOnClickListener { Toast.makeText(context, "Jogo favoritado", Toast.LENGTH_SHORT).show() }
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(match, wrap).apply {
+                topMargin = 32
+            }
+
+            // Primeira linha de botões (Principais)
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(match, wrap)
+
+                val btn = MaterialButton(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, wrap, 1f).apply {
+                        marginEnd = 8
+                    }
+                    setOnClickListener { toggleFavorito(jogo.id) }
+                }
+                btnFavorito = btn
+                updateFavoriteButton()
+                addView(btn)
+
+                addView(MaterialButton(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(10, wrap, 1f)
+                    text = "Compartilhar"
+                    setIconResource(android.R.drawable.ic_menu_share)
+                    setOnClickListener { Toast.makeText(context, "${jogo.nomeMandante()} x ${jogo.nomeVisitante()}", Toast.LENGTH_SHORT).show() }
+                })
             })
-            addView(MaterialButton(context).apply {
-                text = "Compartilhar"
-                setOnClickListener { Toast.makeText(context, "${jogo.nomeMandante()} x ${jogo.nomeVisitante()}", Toast.LENGTH_SHORT).show() }
-            })
-            addView(MaterialButton(context).apply {
-                text = "Ver curso"
+
+            // Segunda linha (Informações Extras)
+            addView(MaterialButton(context, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                layoutParams = LinearLayout.LayoutParams(match, wrap).apply {
+                    topMargin = 8
+                }
+                text = "Ver curso: ${jogo.cursoMandante()}"
+                setIconResource(android.R.drawable.ic_menu_search)
                 setOnClickListener { Toast.makeText(context, jogo.cursoMandante(), Toast.LENGTH_SHORT).show() }
             })
+        }
+    }
+
+    private fun updateFavoriteButton() {
+        btnFavorito.text = if (isFavorito) "Desfavoritar" else "Favoritar"
+        btnFavorito.setIconResource(if (isFavorito) android.R.drawable.btn_star_big_on else android.R.drawable.btn_star_big_off)
+    }
+
+    private fun toggleFavorito(jogoId: String) {
+        lifecycleScope.launch {
+            val success = if (isFavorito) {
+                JoiaRepository.deleteFavorito(this@JogoDetalheActivity, jogoId)
+            } else {
+                JoiaRepository.addFavorito(this@JogoDetalheActivity, jogoId)
+            }
+
+            if (success) {
+                isFavorito = !isFavorito
+                updateFavoriteButton()
+                val msg = if (isFavorito) "Adicionado aos favoritos" else "Removido dos favoritos"
+                Toast.makeText(this@JogoDetalheActivity, msg, Toast.LENGTH_SHORT).show()
+            } else {
+                // Se falhar ao adicionar mas o App acha que é favorito, pode ser um ID órfão
+                if (!isFavorito) {
+                     Toast.makeText(this@JogoDetalheActivity, "Erro ao favoritar: Jogo pode ser inválido no servidor", Toast.LENGTH_SHORT).show()
+                } else {
+                     Toast.makeText(this@JogoDetalheActivity, "Erro ao atualizar favoritos", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -121,8 +183,9 @@ class JogoDetalheActivity : AppCompatActivity() {
     }
 
     private fun sumulaTexto(jogo: Jogo): String {
-        if (jogo.cartoes.isEmpty()) return "Sem cartoes registrados."
-        return jogo.cartoes.joinToString("\n") { "${it.tipo}: ${it.atleta?.nome ?: "Atleta"} - ${it.motivo ?: "Sem motivo"}" }
+        val cartoes = jogo.cartoes.orEmpty()
+        if (cartoes.isEmpty()) return "Sem cartoes registrados."
+        return cartoes.joinToString("\n") { "${it.tipo}: ${it.atleta?.nome ?: "Atleta"} - ${it.motivo ?: "Sem motivo"}" }
     }
 
     private fun escalacoesTexto(jogo: Jogo): String {
